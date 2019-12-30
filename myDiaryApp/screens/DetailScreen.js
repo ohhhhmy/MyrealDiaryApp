@@ -1,24 +1,75 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
 import {SafeAreaView} from 'react-navigation';
+import DetailHeader from '../components/DetailHeader';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
+import NullPage from '../components/NullPage';
 
-export default function DetailScreen() {
-  return (
+const {width, height} = Dimensions.get('window')
+
+export default class DetailScreen extends React.Component{
+  static navigationOptions = {
+    tabBarIcon : ({tintcolor}) => (
+      <MaterialCommunityIcons name = 'book-open-page-variant' size = {30} style = {{color : tintcolor}}/>
+    )
+  }
+
+  post = this.props.navigation.getParam('post')
+
+  _deletesignal = () => {
+    this.props.navigation.navigate("MainScreen", {signal : this.post.id})
+  }
+
+  render(){
+    return (
     <SafeAreaView style={styles.container}>
-      <Text stlye = {styles.textstyle}>DetailScreen</Text>
+      <DetailHeader deleteProps = {this._deletesignal}/>
+      {this.post?
+      <View >
+          <View style = {styles.detailbox}>
+            <Text style = {styles.detailtitle}>
+               제목 : {this.post.title}
+            </Text>
+          </View>
+          {this.post.imageUri?
+             <Image source = {{uri : this.post.imageUri}} style = {{width : 200, height : 200}}/>:null
+          } 
+          <View style = {styles.detailbox}>
+            <Text style = {styles.detailcontent}>
+              내용 : {this.post.content}
+            </Text>
+          </View>
+        </View>
+      :<NullPage/>
+      }
     </SafeAreaView>
   );
-}
+    }
+  }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 50,
   },
 
   textstyle : {
     fontSize : 40,
+  },
+
+  detailbox : {
+    marginVertical : 30,
+    marginLeft : 30,
+    borderLeftColor : 'grey',
+    borderLeftWidth : 5,
+    paddingLeft : 20,
+  },  
+
+  detailtitle : {
+    fontSize : 40,
+  },
+
+  detailcontent : {
+    fontSize : 20
   },
 });
